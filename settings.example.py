@@ -1,0 +1,4 @@
+PLAY_HOST = "localhost"
+PLAY_PORT = "9393"
+PLAY_LOGIN = ""
+PLAY_TOKEN = ""
