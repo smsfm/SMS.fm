@@ -9,7 +9,7 @@ from flask import Flask, request
 
 import twilio.twiml
 
-from worker import Worker, notifications
+from smsfm.worker import Worker, notifications
 
 
 class App(Flask):
