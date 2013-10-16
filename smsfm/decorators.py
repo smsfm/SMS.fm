@@ -2,9 +2,7 @@ from functools import wraps
 
 import re
 
-
-class NoMatchFound(Exception):
-    pass
+from exceptions import NoMatchFound
 
 
 def match(regex):

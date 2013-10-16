@@ -8,7 +8,7 @@ from decorators import match
 
 # TODO match an array of regexes
 
-@match(r"play (?P<song>.+) by (?P<artist>.+)")
+@match(r"play (?!album)(?P<song>.+) by (?P<artist>.+)")
 def play_song_by_artist_command(song, artist):
     return partial(play.add, type="song", artist_name=artist, song_name=song)
 
