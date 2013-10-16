@@ -7,8 +7,6 @@ import gevent
 
 from flask import Flask, request
 
-import requests
-
 import twilio.twiml
 
 from worker import Worker, notifications

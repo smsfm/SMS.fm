@@ -3,23 +3,32 @@
 from gevent import monkey
 monkey.patch_all()
 
-import datetime
-
 import gevent
 
 from gevent import queue
 notifications = queue.Queue()
 
+from play import play
+
 
 class Worker():
+    now_playing = None
+
     def start(self):
         g = gevent.spawn(self._run)
         return g
 
     def _run(self):
+        """
+        Continuously poll play.now_playing, emit any changes.
+        """
         while True:
-            item = dict(when=datetime.datetime.utcnow())
-            notifications.put_nowait(item)
+            resp = play.now_playing()
+            if resp.ok:
+                now_playing = resp.json()
+                if now_playing != self.now_playing:
+                    self.now_playing = now_playing
+                    notifications.put_nowait(self.now_playing)
             gevent.sleep(5)
 
 
