@@ -46,6 +46,9 @@ class Play(requests.Session):
     def now_playing(self):
         return self.post("now_playing")
 
+    def queue(self):
+        return self.post("queue")
+
 
 # Play instance, configured from settings
 play = Play(host=settings.PLAY_HOST, port=settings.PLAY_PORT,
