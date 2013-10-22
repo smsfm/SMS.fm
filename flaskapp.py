@@ -3,14 +3,20 @@
 from gevent import monkey
 monkey.patch_all()
 
+import logging
+
 import gevent
 
 from flask import Flask, request
 
 import twilio.twiml
 
-from smsfm.worker import Worker, notifications
+from sms.fm.commands import commands
+from sms.fm.exceptions import NoMatchFound
+from sms.fm.worker import Worker, notifications
 
+
+indecipherable = logging.getLogger("indecipherable")
 
 class App(Flask):
     greenlets = []
@@ -49,27 +55,38 @@ app = App(__name__)
 
 
 @app.route("/", methods=['GET', 'POST'])
-def hello_monkey():
+def smsfm():
     """
-    Respond to incoming calls with a simple text message.
+    Handles all smsfm requests.
     """
+    message = request.values['Body']
+    iterator = iter(commands)
+    while True:
+        try:
+            # Figure out what's being requested
+            command = iterator.next()
+            req = command(message)
 
-    # TODO
-    # Figure out what's being requested
-    # Request it
-    # Render the response
+            # Request it
+            resp = req()
 
-    print "request.values", repr(request.values)
-    print "request.values['Body']", request.values['Body']
+            # TODO
+            # Render the response
+            template_name = command.__name__.replace("_command", "")
+
+        except NoMatchFound:
+            continue
+
+        except StopIteration:
+            # Couldn't decipher this one, log it
+            indecipherable.info(message)
+
+            # Reply with misunderstood message
+            # TODO
 
     resp = twilio.twiml.Response()
     resp.message("Right you are, squire")
     return str(resp)
-
-
-@app.route("/item", methods=['GET', 'POST'])
-def item():
-    return str(app.item)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
 import unittest
 
-from smsfm import commands
-from smsfm.play import play
-from smsfm.exceptions import NoMatchFound
+from sms.fm import commands
+from sms.fm.play import play
+from sms.fm.exceptions import NoMatchFound
 
 
 def filter_comands(excl):

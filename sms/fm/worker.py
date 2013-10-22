@@ -8,6 +8,8 @@ import gevent
 from gevent import queue
 notifications = queue.Queue()
 
+import requests
+
 from play import play
 
 
@@ -23,12 +25,15 @@ class Worker():
         Continuously poll play.now_playing, emit any changes.
         """
         while True:
-            resp = play.now_playing()
-            if resp.ok:
-                now_playing = resp.json()
-                if now_playing != self.now_playing:
-                    self.now_playing = now_playing
-                    notifications.put_nowait(self.now_playing)
+            try:
+                resp = play.now_playing()
+                if resp.ok:
+                    now_playing = resp.json()
+                    if now_playing != self.now_playing:
+                        self.now_playing = now_playing
+                        notifications.put_nowait(self.now_playing)
+            except requests.ConnectionError:
+                pass
             gevent.sleep(5)
 
 
