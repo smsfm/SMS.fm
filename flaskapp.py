@@ -7,7 +7,7 @@ import logging
 
 import gevent
 
-from flask import Flask, request
+from flask import Flask, render_template, request
 
 import twilio.twiml
 
@@ -70,9 +70,9 @@ def smsfm():
             # Request it
             resp = req()
 
-            # TODO
             # Render the response
-            template_name = command.__name__.replace("_command", "")
+            template_name = "".join((command.__name__.replace("_command", ""), ".txt"))
+            reply = render_template(template_name, ok=resp.ok, data=resp.json())
 
             break
 
@@ -84,10 +84,12 @@ def smsfm():
             indecipherable.info(message)
 
             # Reply with misunderstood message
-            # TODO
+            reply = "Sorry, no comprende :("
+
+            break
 
     resp = twilio.twiml.Response()
-    resp.message("Right you are, squire")
+    resp.message(reply)
     return str(resp)
 
 

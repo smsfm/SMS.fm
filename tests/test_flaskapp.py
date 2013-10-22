@@ -91,5 +91,10 @@ class TestFlaskApp(unittest.TestCase):
 
             self.assertEqual(200, resp.status_code)
 
+    def test_no_match(self):
+        resp = self._post("need you tonight by inxs")
+
+        self.assertEqual(200, resp.status_code)
+
     def tearDown(self):
         pass
