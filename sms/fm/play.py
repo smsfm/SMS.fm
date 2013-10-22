@@ -47,7 +47,7 @@ class Play(requests.Session):
         return self.post("now_playing")
 
     def queue(self):
-        return self.post("queue")
+        return self.get("queue")
 
 
 # Play instance, configured from settings

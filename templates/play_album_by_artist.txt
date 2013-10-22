@@ -1,0 +1,1 @@
+{% if ok %}Added ‘{{data.songs.0.album_name}}’ by ‘{{data.songs.0.artist_name}}’.{% else %}Hmmm, sorry we don't appear to have that in our catalogue.{% endif %}
