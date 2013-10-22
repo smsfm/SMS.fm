@@ -14,14 +14,16 @@ import twilio.twiml
 from sms.fm.commands import commands
 from sms.fm.exceptions import NoMatchFound
 from sms.fm.worker import Worker, notifications
-
+from sms.fm import utils
 
 indecipherable = logging.getLogger("indecipherable")
+
 
 class App(Flask):
     requests = []
     greenlets = []
     item = None
+    request = None
 
     def __init__(self, name):
         # Spin up a worker
@@ -43,9 +45,41 @@ class App(Flask):
         self._shutdown()
 
     def _consume(self):
+        """
+        Consumes now playing notifications.
+
+        Alerts the initiator when their request is being played.
+        """
         while True:
+
+            # Get the now playing item
             self.item = notifications.get()
-            print " * Got", repr(self.item)
+            print " * Got", repr(self.item), repr(self.requests)
+
+            # Are there any requests to match against
+            if self.request is None:
+                try:
+                    self.request = self.requests.pop(0)
+
+                except IndexError:
+                    # Nothing to match against, ignore
+                    continue
+
+            # If item matches request, then alert the initiator of the request
+            # that their request is not playing
+            lft = self.item["now_playing"]
+            rgt = self.request["requested"]["songs"][0]
+
+            # Matches
+            # We allow artists to be matched alone, but a title or album must be paired with the artist
+            artist_match = lft["artist_name"] == rgt["artist_name"]
+            title_match = artist_match and lft["title"] == rgt["title"]
+            album_match = artist_match and lft["album_name"] == rgt["album_name"]
+
+            if artist_match or title_match or album_match:
+                # Send an alert!
+                message = utils.render_template("now_playing.txt", ok=True, data=self.item)
+                utils.sms(self.request["request"]["From"], message)
 
     def _shutdown(self):
         print " * Shutting down"
@@ -77,7 +111,7 @@ def smsfm():
 
                 # Save this request / reply
                 if command.__name__.startswith("play_"):
-                    app.requests.append(dict(requested=resp.json(), by=request.values))
+                    app.requests.append(dict(requested=resp.json(), request=request.values))
 
             else:
                 # No response

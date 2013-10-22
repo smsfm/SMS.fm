@@ -13,7 +13,8 @@ class TestFlaskApp(unittest.TestCase):
 
     def _post(self, msg):
         return self.app.post('/', data=dict(
-            Body=msg
+            Body=msg,
+            From="+447957642895"
         ))
 
     @mock.patch("twilio.twiml")
