@@ -19,6 +19,7 @@ from sms.fm.worker import Worker, notifications
 indecipherable = logging.getLogger("indecipherable")
 
 class App(Flask):
+    requests = []
     greenlets = []
     item = None
 
@@ -70,9 +71,21 @@ def smsfm():
             # Request it
             resp = req()
 
-            # Render the response
+            if resp.ok:
+                # Parse the response
+                data = resp.json()
+
+                # Save this request / reply
+                if command.__name__.startswith("play_"):
+                    app.requests.append(dict(requested=resp.json(), by=request.values))
+
+            else:
+                # No response
+                data = None
+
+            # Render the reply
             template_name = "".join((command.__name__.replace("_command", ""), ".txt"))
-            reply = render_template(template_name, ok=resp.ok, data=resp.json())
+            reply = render_template(template_name, ok=resp.ok, data=data)
 
             break
 

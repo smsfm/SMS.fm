@@ -49,13 +49,13 @@ class TestCommands(unittest.TestCase):
             self.assertRaises(NoMatchFound, command, "play album An Awesome Wave by alt-J")
 
     def test_next_song_matches_command(self):
-        command = commands.play_next_song_command("next")
+        command = commands.next_song_command("next")
         self.assertEqual(play.next, command.func)
         self.assertIsNone(None, command.keywords)
         self.assertIsNone(None, command.args)
 
     def test_next_song_matches_no_other_commands(self):
-        for command in filter_comands(commands.play_next_song_command):
+        for command in filter_comands(commands.next_song_command):
             self.assertRaises(NoMatchFound, command, "next")
 
     def test_pause_matches_command(self):
@@ -69,13 +69,13 @@ class TestCommands(unittest.TestCase):
             self.assertRaises(NoMatchFound, command, "pause")
 
     def test_play_matches_command(self):
-        command = commands.play_command("play")
+        command = commands.start_command("play")
         self.assertEqual(play.play, command.func)
         self.assertIsNone(None, command.keywords)
         self.assertIsNone(None, command.args)
 
     def test_play_matches_no_other_commands(self):
-        for command in filter_comands(commands.play_command):
+        for command in filter_comands(commands.start_command):
             self.assertRaises(NoMatchFound, command, "play")
 
     def test_now_playing_matches_command(self):

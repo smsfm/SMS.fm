@@ -24,7 +24,7 @@ def play_album_by_artist_command(album, artist):
 
 
 @match(r"^next$")
-def play_next_song_command(*args, **kwargs):
+def next_song_command(*args, **kwargs):
     return partial(play.next)
 
 
@@ -34,7 +34,7 @@ def pause_command(*args, **kwargs):
 
 
 @match(r"^play$")
-def play_command(*args, **kwargs):
+def start_command(*args, **kwargs):
     return partial(play.play)
 
 

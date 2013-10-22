@@ -8,6 +8,7 @@ import flaskapp
 class TestFlaskApp(unittest.TestCase):
     def setUp(self):
         flaskapp.app.config['TESTING'] = True
+        flaskapp.app.requests = []
         self.app = flaskapp.app.test_client()
 
     def _post(self, msg):
@@ -22,6 +23,7 @@ class TestFlaskApp(unittest.TestCase):
 
         add.assert_called_once_with(type="song", artist_name="inxs", song_name="need you tonight")
 
+        self.assertEqual(1, len(flaskapp.app.requests))
         self.assertEqual(200, resp.status_code)
 
     @mock.patch("twilio.twiml")
@@ -31,6 +33,7 @@ class TestFlaskApp(unittest.TestCase):
 
         add.assert_called_once_with(type="album", artist_name="inxs", album_name="kick")
 
+        self.assertEqual(1, len(flaskapp.app.requests))
         self.assertEqual(200, resp.status_code)
 
     @mock.patch("twilio.twiml")
@@ -40,6 +43,7 @@ class TestFlaskApp(unittest.TestCase):
 
         add.assert_called_once_with(type="artist", artist_name="inxs")
 
+        self.assertEqual(1, len(flaskapp.app.requests))
         self.assertEqual(200, resp.status_code)
 
     @mock.patch("twilio.twiml")
@@ -49,6 +53,7 @@ class TestFlaskApp(unittest.TestCase):
 
         next.assert_called_once()
 
+        self.assertEqual(0, len(flaskapp.app.requests))
         self.assertEqual(200, resp.status_code)
 
     @mock.patch("twilio.twiml")
@@ -58,6 +63,7 @@ class TestFlaskApp(unittest.TestCase):
 
         pause.assert_called_once()
 
+        self.assertEqual(0, len(flaskapp.app.requests))
         self.assertEqual(200, resp.status_code)
 
     @mock.patch("twilio.twiml")
@@ -67,6 +73,7 @@ class TestFlaskApp(unittest.TestCase):
 
         play.assert_called_once()
 
+        self.assertEqual(0, len(flaskapp.app.requests))
         self.assertEqual(200, resp.status_code)
 
     @mock.patch("twilio.twiml")
@@ -78,6 +85,7 @@ class TestFlaskApp(unittest.TestCase):
 
             queue.assert_called_once()
 
+            self.assertEqual(0, len(flaskapp.app.requests))
             self.assertEqual(200, resp.status_code)
 
     @mock.patch("twilio.twiml")
@@ -89,11 +97,15 @@ class TestFlaskApp(unittest.TestCase):
 
             now_playing.assert_called_once()
 
+            self.assertEqual(0, len(flaskapp.app.requests))
             self.assertEqual(200, resp.status_code)
 
-    def test_no_match(self):
+    @mock.patch("sms.fm.play.play.add")
+    def test_no_match(self, add):
         resp = self._post("need you tonight by inxs")
 
+        self.assertEqual(0, add.call_count)
+        self.assertEqual(0, len(flaskapp.app.requests))
         self.assertEqual(200, resp.status_code)
 
     def tearDown(self):
