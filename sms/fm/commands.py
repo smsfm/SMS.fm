@@ -38,12 +38,12 @@ def play_command(*args, **kwargs):
     return partial(play.play)
 
 
-@match(r"^what'?s playing$")
+@match(r"^what'?s playing\??$")
 def now_playing_command(*args, **kwargs):
     return partial(play.now_playing)
 
 
-@match(r"^what'?s next$")
+@match(r"^what'?s next\??$")
 def queue_command(*args, **kwargs):
     return partial(play.queue)
 

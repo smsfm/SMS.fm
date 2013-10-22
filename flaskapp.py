@@ -74,6 +74,8 @@ def smsfm():
             # Render the response
             template_name = command.__name__.replace("_command", "")
 
+            break
+
         except NoMatchFound:
             continue
 
